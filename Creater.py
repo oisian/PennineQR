@@ -7,4 +7,4 @@ def create(filename = "Test.png", data = "", error='H', scale = 6):
     return True
 
 data = {"PENNINEMANUFACTURING":{"ProductCode":"XASD2", "Quantity":"123"}}
-create(filename="Test1", data=data)
+create(filename="Test1", data=str(data))
