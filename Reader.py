@@ -10,3 +10,4 @@ def decode_code(filepath):
 if __name__ == "__main__":
     i = input()
     decode_code(i)
+
