@@ -3,7 +3,7 @@ import json
 def decode_code(filepath):
     code = QR(filename=filepath)
     if code.decode():
-        data = code.data_to_string()
+        data = code.data
         data = str(data)
         print data
         k = json.loads(data)
