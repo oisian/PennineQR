@@ -9,5 +9,6 @@ def decode_code(filepath):
 
 if __name__ == "__main__":
     i = input()
+    print i
     decode_code(i)
 
