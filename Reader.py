@@ -4,9 +4,9 @@ def decode_code(filepath):
     code = QR(filename=filepath)
     if code.decode():
         data = code.data_to_string()
-        json = json.loads(data)
+        k = json.loads(data)
         print data
-        print json
+        print k
     else:
         return False
 
