@@ -8,7 +8,7 @@ def decode_code(filepath):
         return False
 
 if __name__ == "__main__":
-    i = input()
+    i = raw_input()
     print i
     decode_code(i)
 
