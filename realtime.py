@@ -1,16 +1,18 @@
 import numpy as np
 import cv2
 
-cap = cv2.VideoCapture(0)
-ret, frame = cap.read()
+cv2.namedWindow("preview")
+vc = cv2.VideoCapture(0)
 
-while(ret):
-    ret, frame = cap.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('outVideo',frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+if vc.isOpened(): # try to get the first frame
+    rval, frame = vc.read()
+else:
+    rval = False
+
+while rval:
+    cv2.imshow("preview", frame)
+    rval, frame = vc.read()
+    key = cv2.waitKey(20)
+    if key == 27: # exit on ESC
         break
-    ret, frame = cap.read()
-
-cap.release()
-#cv2.destroyAllWindows()
+cv2.destroyWindow("preview")
