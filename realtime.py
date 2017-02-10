@@ -1,9 +1,9 @@
-import cv2.cv as cv
+import cv2
 
 title = "Dynamsoft Barcode Reader"
-cv.NamedWindow(title, 1)
-capture = cv.CaptureFromCAM(0)
+cv2.namedWindow(title, 1)
+capture = cv2.VideoCapture(0)
 
 while True:
-    img = cv.QueryFrame(capture)
-    cv.ShowImage(title, img)
+    result, img = capture.read()
+    cv2.imshow(title, img)
