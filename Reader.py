@@ -1,14 +1,16 @@
-
+import time
 import json
 from PIL import Image
 import zbarlight
 def decode_code(filepath):
     file_path = filepath
-    with open(file_path, 'rb') as image_file:
-        image = Image.open(image_file)
-        image.load()
-
+    image = Image.open(file_path)
+    image.load()
+    start = time.time()
     codes = zbarlight.scan_codes('qrcode', image)
+    end = time.time()
+    print(end - start)
+
     print('QR codes: %s' % codes)
 
 if __name__ == "__main__":
