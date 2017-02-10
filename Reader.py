@@ -5,13 +5,13 @@ def decode_code(filepath):
     if code.decode():
         data = code.data
         data = str(data)
-        print data
+        print(data)
         k = json.loads(data)
-        print k
+        print(k)
     else:
         return False
 
 if __name__ == "__main__":
-    i = raw_input()
+    i = input()
     decode_code(i)
 
