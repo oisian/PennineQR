@@ -1,7 +1,7 @@
-from qrtools import QR
+import  qrtools
 import json
 def decode_code(filepath):
-    code = QR(filename=filepath)
+    code = qrtools.QR(filename=filepath)
     if code.decode():
         data = code.data
         data = str(data)
