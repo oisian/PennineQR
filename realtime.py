@@ -1,5 +1,5 @@
 #import zbar
-
+import zbarlight
 #from PIL import Image
 import cv2
 
@@ -31,7 +31,8 @@ def main():
 
         # Converts image to grayscale.
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
+        codes = zbarlight.scan_codes('qrcode', frame)
+        print(codes)
         # Uses PIL to convert the grayscale image into a ndary array that ZBar can understand.
         #image = Image.fromarray(gray)
        # width, height = image.size
