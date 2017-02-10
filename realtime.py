@@ -20,8 +20,8 @@ def main():
 
     while True:
         # To quit this program press q.
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+         #   break
 
         # Breaks down the video into frames
         ret, frame = capture.read()
