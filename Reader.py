@@ -1,15 +1,15 @@
-from qrtools.qrtools import QR
+
 import json
+from PIL import Image
+import zbarlight
 def decode_code(filepath):
-    code = QR(filename=filepath)
-    if code.decode():
-        data = code.data
-        data = str(data)
-        print(data)
-        k = json.loads(data)
-        print(k)
-    else:
-        return False
+    file_path = filepath
+    with open(file_path, 'rb') as image_file:
+        image = Image.open(image_file)
+        image.load()
+
+    codes = zbarlight.scan_codes('qrcode', image)
+    print('QR codes: %s' % codes)
 
 if __name__ == "__main__":
     i = input()
