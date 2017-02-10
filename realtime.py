@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-cap = cv2.VideoCapture('output.avi')
+cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 
 while(ret):
@@ -13,4 +13,4 @@ while(ret):
     ret, frame = cap.read()
 
 cap.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
