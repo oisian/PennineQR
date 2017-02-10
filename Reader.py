@@ -2,6 +2,8 @@ import time
 import json
 from PIL import Image
 import zbarlight
+
+
 def decode_code(filepath):
     file_path = filepath
     image = Image.open(file_path)
@@ -11,8 +13,9 @@ def decode_code(filepath):
     end = time.time()
     print(end - start)
 
-    print('QR codes: %s' % codes)
-
+    jsonCode = json.loads(codes)
+    #print('QR codes: %s' % codes)
+    print(jsonCode)
 if __name__ == "__main__":
     i = input()
     decode_code(i)
