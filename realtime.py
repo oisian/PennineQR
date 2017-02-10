@@ -13,7 +13,7 @@ while(True):
     # Display the resulting frame
     cv2.imshow('frame',gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        print("2")
 
 # When everything done, release the capture
 cap.release()
