@@ -13,9 +13,12 @@ def decode_code(filepath):
     end = time.time()
     print(end - start)
 
-    jsonCode = json.loads(codes)
-    #print('QR codes: %s' % codes)
-    print(jsonCode)
+    json.o
+    print('QR codes: %s' % codes)
+
+
+
+
 if __name__ == "__main__":
     i = input()
     decode_code(i)
