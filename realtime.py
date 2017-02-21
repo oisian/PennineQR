@@ -64,14 +64,14 @@ def detect(image):
 
 def detectCode(img):
     if (img) != None:
-        #cv2.imwrite("roi.png", img)
+        cv2.imwrite("roi.png", img)
         print("save image")
     return print("image search")
 
 
 cv2.namedWindow("preview")
 vc = cv2.VideoCapture(0)
-
+vc.set(cv2.CAP_PROP_FPS, 60)
 if vc.isOpened():  # try to get the first frame
     rval, frame = vc.read()
 else:
