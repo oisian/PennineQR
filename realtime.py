@@ -39,25 +39,34 @@ def detect(image):
     c = sorted(cnts, key=cv2.contourArea, reverse=True)[0]
 
     # Draw box on screen
+
+
+    x, y, width, height = cv2.boundingRect(c)
+    if (x - 30 > 0):
+        x = x - 30
+    else:
+        x = 0
+
+    if (y - 30 > 0):
+        y = y - 30
+    else:
+        y = 0
+    roi = frame[y:y + height + 60, x:x + width + 60]
+    dst = cv2.resize(roi, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
+
     rect = cv2.minAreaRect(c)
     box = cv2.boxPoints(rect)
     box = np.int0(box)
     cv2.drawContours(frame, [box], 0, (0, 0, 255), 2)
 
-    x, y, width, height = cv2.boundingRect(c)
-    x = x - 30
-    y = y - 30
-    roi = frame[y:y + height + 50, x:x + width + 50]
-    dst = cv2.resize(roi, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
     return dst
-    # cv2.imwrite("roi.png", dst)
 
 
-
-
-
-    # return the bounding box of the barcode
-    # return box
+def detectCode(img):
+    if (img) != None:
+        #cv2.imwrite("roi.png", img)
+        print("save image")
+    return print("image search")
 
 
 cv2.namedWindow("preview")
@@ -69,11 +78,10 @@ else:
     rval = False
 
 while rval:
-    box = detect(frame)
+    code = detectCode(detect(frame))
+
     cv2.imshow("preview", frame)
-    cv2.imwrite("roi.png", box)
-    print("\n\n\n\n\n")
-    # cv2.imwrite('Barcode.png', img)
+
     rval, frame = vc.read()
     key = cv2.waitKey(20)
     if key == 27:  # exit on ESC
