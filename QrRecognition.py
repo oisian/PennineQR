@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import QRCodeDetection as QR
-import zxing
+#import zxing
 import time
 vc = cv2.VideoCapture(0)
 
@@ -20,12 +20,12 @@ while rval:
         cv2.imwrite("roi.png", result)
 
         cv2.imshow("preview", result)
-        reader = zxing.BarCodeReader("C:/zxing-master")
+        #reader = zxing.BarCodeReader("C:/zxing-master")
 
-        barcode = reader.decode("roi.png")
+        #barcode = reader.decode("roi.png")
 
-        if barcode != None:
-            print(barcode.data)
+        #if barcode != None:
+        #    print(barcode.data)
 
 
     cv2.imshow("pre", frame)

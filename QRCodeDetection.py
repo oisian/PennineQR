@@ -247,14 +247,19 @@ class QrCodeDetection:
                 outlier = C
                 median1 = A
                 median2 = B
+                print("1")
             elif (AC > AB and AC > BC):
                 outlier = B
                 median1 = A
                 median2 = C
+                print("2")
             elif (BC > AB and BC > AC):
                 outlier = A
                 median1 = B
                 median2 = C
+                print("3")
+            else:
+                return None
 
             top = outlier
             dist = self.line_equation(mc[median1], mc[median2], mc[outlier])
