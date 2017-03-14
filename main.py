@@ -1,70 +1,142 @@
 import cv2
-#import zxing
-import zbarlight
+import zxing
+# import zbarlight
 from  PIL import Image
 import Stream
-import main
+from connect import main
 import realtime
-
-con = main.connection()
-con.start()
-
-vs = Stream.WebcamVideoStream(src=0).start()
-detection = realtime.CodeDetection()
-detection.start()
+import time
+from threading import Thread
 
 
-ip = con.ip
-ip1 = ip
-ip2 = '192.168.0.56'
+# con = main.connection().start()
+# vs = Stream.WebcamVideoStream(src=0).start()
+# detection = realtime.CodeDetection().start()
+#
+# ip = con.ip
+# ip1 = ip
+# ip2 = '192.168.0.56'
+# hold = False
+# while True:
+#    # grab the frame from the threaded video stream and resize it
+#    # to have a maximum width of 400 pixels
+#
+#    frame = vs.read()
+#    cv2.imshow("q", frame)
+#    print(hold)
+#    # check to see if the frame should be displayed to our screen
+#    if not hold:
+#        img = detection.detect(frame)
+#        if img != None :
+#            cv2.imshow("Frame", img)
+#            cv2.imwrite("roi.png", img)
+#            reader = zxing.BarCodeReader("C:/zxing/")
+#            barcode = reader.decode("roi.png")
+#
+#            if barcode != None:
+#                data = barcode.data
+#                print(data)
+#                splitData = data.split(",")
+#                if splitData[0] == "pm":
+#                    print(splitData)
+#                    UNID = splitData[1].split(":")[1].rstrip()
+#                    productCode = splitData[2].split(":")[1].rstrip()
+#                    Quantity = splitData[3].split(":")[1].rstrip()
+#                    if productCode and Quantity:
+#                        con.requests.append({"IP": ip,"UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
+#                        if ip == ip1:
+#                            ip = ip2
+#                        else:
+#                            ip = ip1
+#                hold = True
+#
+#
+#    key = cv2.waitKey(20)
+#    if key == 27:  # exit on ESC
+#        break
+#
+## do a bit of cleanup
+# cv2.destroyAllWindows()
+# vs.stop()
+# detection.stop()
 
-while True:
-    # grab the frame from the threaded video stream and resize it
-    # to have a maximum width of 400 pixels
-
-    frame = vs.read()
-    cv2.imshow("ee", frame)
-    # check to see if the frame should be displayed to our screen
-    img = detection.detect(frame)
-    if img != None:
-        cv2.imshow("Frame", img)
-        cv2.imwrite("roi.png", img)
-
-        file_path = './tests/fixtures/two_qr_codes.png'
-        with open(file_path, 'rb') as image_file:
-            image = Image.open(image_file)
-            image.load()
-
-        codes = zbarlight.scan_codes('qrcode', image)
-        print('QR codes: %s' % codes)
 
 
+class StockMovement:
+    def __init__(self, show_image=True):
+        #flag to brake out of the main loop
+        self.stopped = False
+        #Class in charge of sending data to web server
+        self.poster = None;
+        #Class in charge of detecting if possiable QR code in frame
+        self.detector = None;
+        #Class in charge of getting Cam stream
+        self.stream = None
+        #flag to determain if stream should be shown
+        self.show_image = show_image
+        #current frame from camera
+        self.frame = None
 
-        #reader = zxing.BarCodeReader("C:/zxing/")
-        #barcode = reader.decode("roi.png",try_harder=True)
-        #print(barcode)
-        #if barcode != None:
-        #    data = barcode.data
-        #    splitData = data.split(",")
-        #    if splitData[0] == "PM":
-        #        print(splitData)
-        #        UNID = splitData[1].split(":")[1].rstrip()
-        #        productCode = splitData[2].split(":")[1].rstrip()
-        #        Quantity = splitData[3].split(":")[1].rstrip()
-        #        if productCode and Quantity:
-        #            con.requests.append({"IP": ip,"UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
-        #            if ip == ip1:
-        #                ip = ip2
-        #            else:
-        #                ip = ip1
-        #else:
-            print("no code")
+        #Ip address of terminal
+        self.ip = None
+        self.ip1 = '192.168.0.56'
+        #flag to wait for QR to pass
+        self.hold = False
 
-    key = cv2.waitKey(20)
-    if key == 27:  # exit on ESC
-        break
+    def start(self):
+        self.poster = main.connection().start()
+        self.stream = Stream.WebcamVideoStream(src=0).start()
+        self.detector = realtime.CodeDetection().start()
+        self.ip = self.poster.ip
 
-# do a bit of cleanup
-cv2.destroyAllWindows()
-vs.stop()
-detection.stop()
+        Thread(target=self.loop, args=()).start()
+        return self
+
+    def loop(self):
+        while True:
+            if self.stopped:
+                self.close_program()
+                return
+
+            self.frame = self.stream.read()
+            if self.show_image:
+                cv2.imshow("Unprocessed Frame", self.frame)
+
+            if not self.hold:
+                img = self.detector.detect(self.frame)
+                if img != None:
+                    if self.show_image:
+                        cv2.imshow("Frame", img)
+                    cv2.imwrite("roi.png", img)
+                    reader = zxing.BarCodeReader("C:/zxing/")
+                    barcode = reader.decode("roi.png")
+                    if barcode != None:
+                        data = barcode.data
+                        splitData = data.split(",")
+                        if splitData[0] == "pm":
+                            UNID = splitData[1].split(":")[1].rstrip()
+                            productCode = splitData[2].split(":")[1].rstrip()
+                            Quantity = splitData[3].split(":")[1].rstrip()
+                            if productCode and Quantity:
+                                self.poster.requests.append(
+                                    {"IP": self.ip, "UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
+                                if self.ip == self.ip1:
+                                    self.ip = self.poster.ip
+                                else:
+                                    self.ip = self.ip1
+                        self.hold = False
+            else:
+                self.hold_check()
+
+    def hold_check(self):
+        pass
+
+
+    def close_program(self):
+        cv2.destroyAllWindows()
+        self.stream.stop()
+        self.detector.stop()
+        self.poster.stop()
+
+
+sm = StockMovement(show_image=False).start()

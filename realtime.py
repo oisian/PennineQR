@@ -44,8 +44,8 @@ class CodeDetection():
                 closed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
                 # perform a series of erosions and dilations
-                closed = cv2.erode(closed, None, iterations=30)
-                closed = cv2.dilate(closed, None, iterations=30)
+                closed = cv2.erode(closed, None, iterations=25)
+                closed = cv2.dilate(closed, None, iterations=25)
 
                 # find the contours in the thresholded image
                 _, cnts, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -72,12 +72,13 @@ class CodeDetection():
                 else:
                     y = 0
                 roi = frame[y:y + height + 60, x:x + width + 60]
-                dst = cv2.resize(roi, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
+                dst = cv2.resize(roi, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
 
-                rect = cv2.minAreaRect(c)
-                box = cv2.boxPoints(rect)
-                box = np.int0(box)
-                cv2.drawContours(frame, [box], 0, (0, 0, 255), 2)
+                #rect = cv2.minAreaRect(c)
+                #box = cv2.boxPoints(rect)
+                #box = np.int0(box)
+                #cv2.drawContours(frame, [box], 0, (0, 0, 255), 2)
+                #cv2.imshow("dd", frame)
                 return dst
 
 

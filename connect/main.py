@@ -28,7 +28,6 @@ class connection:
             if len(self.requests) > 0:
                 i = self.requests.popleft()
                 r = self.send_data("/StockMovement/receive_code", i)
-                print(r.content)
 
 
     def disconnect(self):
