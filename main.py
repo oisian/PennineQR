@@ -1,11 +1,10 @@
-from qrcode import Stream
-from qrcode import realtime
-from connect import main
-import zxing
-import json
-import zbarlight
-
 import cv2
+#import zxing
+import zbarlight
+from  PIL import Image
+import Stream
+import main
+import realtime
 
 con = main.connection()
 con.start()
@@ -30,24 +29,35 @@ while True:
     if img != None:
         cv2.imshow("Frame", img)
         cv2.imwrite("roi.png", img)
-        reader = zxing.BarCodeReader("C:/zxing/")
-        barcode = reader.decode("C:/Users/jkirkpatrick/Desktop/PennineQR/roi.png",try_harder=True)
-        print(barcode)
-        if barcode != None:
-            data = barcode.data
-            splitData = data.split(",")
-            if splitData[0] == "PM":
-                print(splitData)
-                UNID = splitData[1].split(":")[1].rstrip()
-                productCode = splitData[2].split(":")[1].rstrip()
-                Quantity = splitData[3].split(":")[1].rstrip()
-                if productCode and Quantity:
-                    con.requests.append({"IP": ip,"UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
-                    if ip == ip1:
-                        ip = ip2
-                    else:
-                        ip = ip1
-        else:
+
+        file_path = './tests/fixtures/two_qr_codes.png'
+        with open(file_path, 'rb') as image_file:
+            image = Image.open(image_file)
+            image.load()
+
+        codes = zbarlight.scan_codes('qrcode', image)
+        print('QR codes: %s' % codes)
+
+
+
+        #reader = zxing.BarCodeReader("C:/zxing/")
+        #barcode = reader.decode("roi.png",try_harder=True)
+        #print(barcode)
+        #if barcode != None:
+        #    data = barcode.data
+        #    splitData = data.split(",")
+        #    if splitData[0] == "PM":
+        #        print(splitData)
+        #        UNID = splitData[1].split(":")[1].rstrip()
+        #        productCode = splitData[2].split(":")[1].rstrip()
+        #        Quantity = splitData[3].split(":")[1].rstrip()
+        #        if productCode and Quantity:
+        #            con.requests.append({"IP": ip,"UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
+        #            if ip == ip1:
+        #                ip = ip2
+        #            else:
+        #                ip = ip1
+        #else:
             print("no code")
 
     key = cv2.waitKey(20)
