@@ -1,10 +1,10 @@
 import pyqrcode
 
 
-def create(filename = "Test.png", data = "", error='H', scale = 6):
+def create(filename = "Test.png", data = "", error='H', scale = 4):
     Code = pyqrcode.create(data,error)
     Code.png(filename + ".png", scale)
     return True
 
-data = {"PENNINEMANUFACTURING":{"ProductCode":"XASD2", "Quantity":"123"}}
+data = "PENNINEMANUFACTURING,UNID:123123,ProductCode:XASD2,Quantity:123"
 create(filename="Test1", data=str(data))

@@ -16,6 +16,7 @@ class connection:
     def start(self):
         mydata=[('IP', self.ip)]
         r = self.send_data("/StockMovement/Create_Terminal", mydata)
+
         Thread(target=self.loop, args=()).start()
         return self
 
@@ -24,10 +25,8 @@ class connection:
         while True:
             if self.stopped:
                 return
-
             if len(self.requests) > 0:
                 i = self.requests.popleft()
-                print(i)
                 r = self.send_data("/StockMovement/receive_code", i)
                 print(r.content)
 
@@ -52,6 +51,7 @@ class connection:
 
     def send_data(self,path , data):
         url = self.server + path
+        print(url, data)
         return requests.post(url, data, allow_redirects=False)
 
 
