@@ -1,5 +1,5 @@
 import cv2
-import zxing
+#import zxing
 import zbarlight
 from  PIL import Image
 import Stream
@@ -7,60 +7,6 @@ from connect import main
 import realtime
 import time
 from threading import Thread
-
-
-# con = main.connection().start()
-# vs = Stream.WebcamVideoStream(src=0).start()
-# detection = realtime.CodeDetection().start()
-#
-# ip = con.ip
-# ip1 = ip
-# ip2 = '192.168.0.56'
-# hold = False
-# while True:
-#    # grab the frame from the threaded video stream and resize it
-#    # to have a maximum width of 400 pixels
-#
-#    frame = vs.read()
-#    cv2.imshow("q", frame)
-#    print(hold)
-#    # check to see if the frame should be displayed to our screen
-#    if not hold:
-#        img = detection.detect(frame)
-#        if img != None :
-#            cv2.imshow("Frame", img)
-#            cv2.imwrite("roi.png", img)
-#            reader = zxing.BarCodeReader("C:/zxing/")
-#            barcode = reader.decode("roi.png")
-#
-#            if barcode != None:
-#                data = barcode.data
-#                print(data)
-#                splitData = data.split(",")
-#                if splitData[0] == "pm":
-#                    print(splitData)
-#                    UNID = splitData[1].split(":")[1].rstrip()
-#                    productCode = splitData[2].split(":")[1].rstrip()
-#                    Quantity = splitData[3].split(":")[1].rstrip()
-#                    if productCode and Quantity:
-#                        con.requests.append({"IP": ip,"UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
-#                        if ip == ip1:
-#                            ip = ip2
-#                        else:
-#                            ip = ip1
-#                hold = True
-#
-#
-#    key = cv2.waitKey(20)
-#    if key == 27:  # exit on ESC
-#        break
-#
-## do a bit of cleanup
-# cv2.destroyAllWindows()
-# vs.stop()
-# detection.stop()
-
-
 
 class StockMovement:
     def __init__(self, show_image=True):
@@ -102,20 +48,19 @@ class StockMovement:
             self.frame = self.stream.read()
             if self.show_image:
                 cv2.imshow("Unprocessed Frame", self.frame)
-
             if not self.hold:
                 img =  self.detector.detect(self.frame)
                 if img != None:
                     if self.show_image:
                         cv2.imshow("Frame", img)
+                    cv2.imwrite("roi.png", img)
+                    if self.detect_mode == "Zxing":
+                        self.xzing_detext(img)
+                        self.hold = False
 
-                if self.detect_mode == "Zxing":
-                    self.xing_detext(img)
-                    self.hold = False
-
-                if self.detect_mode == "Zbar":
-                    self.xing_detext(img)
-                    self.hold = False
+                    if self.detect_mode == "Zbar":
+                        self.zbar_detext(img)
+                        self.hold = False
             else:
                 self.hold_check()
 
