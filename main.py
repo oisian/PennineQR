@@ -1,5 +1,5 @@
 import cv2
-#import zxing
+# import zxing
 import zbarlight
 from  PIL import Image
 import Stream
@@ -8,25 +8,26 @@ import realtime
 import time
 from threading import Thread
 
+
 class StockMovement:
-    def __init__(self, show_image=True):
-        #flag to brake out of the main loop
+    def __init__(self, show_image=False):
+        # flag to brake out of the main loop
         self.stopped = False
-        #Class in charge of sending data to web server
+        # Class in charge of sending data to web server
         self.poster = None;
-        #Class in charge of detecting if possiable QR code in frame
+        # Class in charge of detecting if possiable QR code in frame
         self.detector = None;
-        #Class in charge of getting Cam stream
+        # Class in charge of getting Cam stream
         self.stream = None
-        #flag to determain if stream should be shown
+        # flag to determain if stream should be shown
         self.show_image = show_image
-        #current frame from camera
+        # current frame from camera
         self.frame = None
 
-        #Ip address of terminal
+        # Ip address of terminal
         self.ip = None
         self.ip1 = '192.168.0.56'
-        #flag to wait for QR to pass
+        # flag to wait for QR to pass
         self.hold = False
 
         self.detect_mode = "Zbar";
@@ -49,7 +50,7 @@ class StockMovement:
             if self.show_image:
                 cv2.imshow("Unprocessed Frame", self.frame)
             if not self.hold:
-                img =  self.detector.detect(self.frame)
+                img = self.detector.detect(self.frame)
                 if img != None:
                     if self.show_image:
                         cv2.imshow("Frame", img)
@@ -68,7 +69,6 @@ class StockMovement:
             if key == 27:  # exit on ESC
                 break
 
-
     def zbar_detect(self):
         file_path = 'roi.png'
         with open(file_path, 'rb') as image_file:
@@ -79,8 +79,7 @@ class StockMovement:
         print('QR codes: %s' % codes)
         return codes
 
-
-    def zxing_detext(self,img):
+    def zxing_detext(self, img):
         cv2.imwrite("roi.png", img)
         reader = zxing.BarCodeReader("C:/zxing/")
         barcode = reader.decode("roi.png")
@@ -99,10 +98,8 @@ class StockMovement:
                     else:
                         self.ip = self.ip1
 
-
     def hold_check(self):
         pass
-
 
     def close_program(self):
         cv2.destroyAllWindows()
@@ -111,4 +108,4 @@ class StockMovement:
         self.poster.stop()
 
 
-sm = StockMovement(show_image=True).start()
+sm = StockMovement(show_image=False).start()
