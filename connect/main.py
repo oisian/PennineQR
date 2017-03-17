@@ -8,7 +8,7 @@ from collections import deque
 
 class connection:
     def __init__(self):
-        self.server = 'http://localhost'
+        self.server = 'http://192.168.0.100'
         self.ip = self.get_ip_address()
         self.requests = deque()
         self.stopped = False

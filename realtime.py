@@ -3,6 +3,7 @@ import numpy as np
 from threading import Thread
 #import zxing
 import time
+import cProfile
 
 class CodeDetection():
     def __init__(self):
