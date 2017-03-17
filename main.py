@@ -59,7 +59,7 @@ class StockMovement:
                         self.xzing_detext(img)
                         self.hold = False
 
-                    if self.detect_mode == "Zbar":
+                    if self.zbar_detect == "Zbar":
                         self.zbar_detext(img)
                         self.hold = False
             else:
