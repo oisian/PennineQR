@@ -119,4 +119,4 @@ class StockMovement:
 
 
 
-sm = StockMovement(show_image=False).start()
+sm = StockMovement(show_image=True).start()
