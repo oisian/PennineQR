@@ -1,6 +1,14 @@
 import cv2
-# import zxing
-import zbarlight
+try:
+    import zbarlight
+except ImportError:
+    pass
+
+try:
+    import zxing
+except ImportError:
+    pass
+
 from  PIL import Image
 import Stream
 from connect import main
