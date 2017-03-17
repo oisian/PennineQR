@@ -65,9 +65,11 @@ class StockMovement:
             else:
                 self.hold_check()
 
-            key = cv2.waitKey(20)
-            if key == 27:  # exit on ESC
-                break
+
+            if self.show_image:
+                key = cv2.waitKey(20)
+                if key == 27:  # exit on ESC
+                    break
 
     def zbar_detect(self):
         file_path = 'roi.png'
@@ -106,6 +108,7 @@ class StockMovement:
         self.stream.stop()
         self.detector.stop()
         self.poster.stop()
+
 
 
 sm = StockMovement(show_image=False).start()
