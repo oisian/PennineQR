@@ -31,7 +31,7 @@ class WebcamVideoStream:
 
     def read(self):
         # return the frame most recently read
-        return self.frame
+        return cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
 
     def stop(self):
         # indicate that the thread should be stopped

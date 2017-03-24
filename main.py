@@ -3,18 +3,15 @@ try:
     import zbarlight
 except ImportError:
     pass
-
 try:
     import zxing
 except ImportError:
     pass
-
-from  PIL import Image
 import Stream
 from connect import main
-import realtime
-import time
+import Qr_Detect
 from threading import Thread
+
 
 
 class StockMovement:
@@ -35,15 +32,13 @@ class StockMovement:
         # Ip address of terminal
         self.ip = None
         self.ip1 = '192.168.0.56'
-        # flag to wait for QR to pass
-        self.hold = False
-
         self.detect_mode = "Zbar";
+        self.last_code = None
 
     def start(self):
         self.poster = main.connection().start()
         self.stream = Stream.WebcamVideoStream(src=0).start()
-        self.detector = realtime.CodeDetection().start()
+        self.detector = Qr_Detect.CodeDetection().start() #Qr_Detect.CodeDetection().start()
         self.ip = self.poster.ip
         Thread(target=self.loop, args=()).start()
         return self
@@ -54,59 +49,54 @@ class StockMovement:
                 self.close_program()
                 return
 
-            self.frame = self.stream.read()
-            if self.show_image:
-                cv2.imshow("Unprocessed Frame", self.frame)
-            if not self.hold:
-                img = self.detector.detect(self.frame)
-                if img != None:
-                    if self.show_image:
-                        cv2.imshow("Frame", img)
-                    cv2.imwrite("roi.png", img)
-                    if self.detect_mode == "Zxing":
-                        self.xzing_detext(img)
-                        self.hold = False
+            frame = self.stream.read()
+            self.detector.frame.put(frame)
 
-                    if self.zbar_detect == "Zbar":
-                        self.zbar_detext(img)
-                        self.hold = False
-            else:
-                self.hold_check()
+            if self.detector.QRBoundingBox !=  None:
+                cv2.drawContours(frame, [self.detector.QRBoundingBox], 0, (0, 0, 255), 2)
 
+            cv2.imshow("Window", frame)
+
+            if self.detector.data:
+                self.parse_send_data(self.detector.data)
 
             if self.show_image:
                 key = cv2.waitKey(20)
                 if key == 27:  # exit on ESC
                     break
 
-    def zbar_detect(self):
-        file_path = 'roi.png'
-        with open(file_path, 'rb') as image_file:
-            image = Image.open(image_file)
-            image.load()
-
-        codes = zbarlight.scan_codes('qrcode', image)
-        print('QR codes: %s' % codes)
-        return codes
-
-    def zxing_detext(self, img):
-        cv2.imwrite("roi.png", img)
+    def zxing_detect(self):
         reader = zxing.BarCodeReader("C:/zxing/")
         barcode = reader.decode("roi.png")
+        return barcode
+
+    def parse_send_data(self, barcode):
         if barcode != None:
-            data = barcode.data
-            splitData = data.split(",")
-            if splitData[0] == "pm":
-                UNID = splitData[1].split(":")[1].rstrip()
-                productCode = splitData[2].split(":")[1].rstrip()
-                Quantity = splitData[3].split(":")[1].rstrip()
-                if productCode and Quantity:
-                    self.poster.requests.append(
-                        {"IP": self.ip, "UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
-                    if self.ip == self.ip1:
-                        self.ip = self.poster.ip
-                    else:
-                        self.ip = self.ip1
+            if self.detect_mode == "Zxing":
+                data = barcode.data
+                splitData = data.split(",")
+                if splitData[0] == "pm":
+                    UNID = splitData[1].split(":")[1].rstrip()
+                    productCode = splitData[2].split(":")[1].rstrip()
+                    Quantity = splitData[3].split(":")[1].rstrip()
+                    if productCode and Quantity:
+                        if self.last_code != UNID:
+                            self.poster.requests.append(
+                                {"IP": self.ip, "UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
+                            self.last_code = UNID;
+
+            else:
+                data = barcode
+                splitData = data.split(",")
+                if splitData[0] == "QR-Code:pm":
+                    UNID = splitData[1].split(":")[1].rstrip()
+                    productCode = splitData[2].split(":")[1].rstrip()
+                    Quantity = splitData[3].split(":")[1].rstrip()
+                    if productCode and Quantity:
+                        if self.last_code != UNID:
+                            self.poster.requests.append(
+                                {"IP": self.ip, "UNID": UNID, 'ProductCode': productCode, 'Quantity': Quantity})
+                            self.last_code = UNID;
 
     def hold_check(self):
         pass
